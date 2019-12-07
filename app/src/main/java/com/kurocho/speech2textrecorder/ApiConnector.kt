@@ -13,7 +13,6 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import java.io.File
-import java.util.logging.Logger
 
 
 class ApiConnector(val userId: String?, val activityContext: Activity) {
@@ -34,7 +33,8 @@ class ApiConnector(val userId: String?, val activityContext: Activity) {
         service.sendAudio(userId,transcriptionName,body).enqueue(object : Callback<ResponseBody>{
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                 Toast.makeText(activityContext, "Failed to send speech to server", Toast.LENGTH_LONG).show()
-                println(t.message)
+                println("\n---------------ERROR---------------")
+                println(t.message+"\n")
             }
 
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {

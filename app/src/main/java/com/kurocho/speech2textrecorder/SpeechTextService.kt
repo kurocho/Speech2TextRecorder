@@ -12,9 +12,8 @@ import retrofit2.http.Part
 
 interface SpeechTextService {
     companion object {
-        fun getURL(): String = "192.168.1.15" //IP KOMPA Z API
+        fun getURL(): String = "http://192.168.1.15" //IP KOMPA Z API
     }
-
 
     @POST("/transcription")
     @Multipart
