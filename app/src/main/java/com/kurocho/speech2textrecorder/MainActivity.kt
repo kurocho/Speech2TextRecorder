@@ -2,20 +2,24 @@ package com.kurocho.speech2textrecorder
 
 import android.Manifest
 import android.content.Intent
-import android.graphics.drawable.ColorDrawable
+import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.view.View
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.FragmentActivity
 import cafe.adriel.androidaudiorecorder.AndroidAudioRecorder
 import cafe.adriel.androidaudiorecorder.model.AudioChannel
 import cafe.adriel.androidaudiorecorder.model.AudioSampleRate
 import cafe.adriel.androidaudiorecorder.model.AudioSource
+import com.kurocho.speech2textrecorder.ratioFragment.Ratio
+import com.kurocho.speech2textrecorder.ratioFragment.RatioFragment
+import com.kurocho.speech2textrecorder.recordingFragment.RecordingFragment
 import java.io.File
 
-class MainActivity : AppCompatActivity() {
+
+class MainActivity : FragmentActivity(), RatioFragment.OnListFragmentInteractionListener, RecordingFragment.OnFragmentInteractionListener {
 
     private val userId: String = "admin"
     private val transcriptionName: String = "test"
@@ -26,11 +30,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        if (supportActionBar != null) {
-            supportActionBar!!.setBackgroundDrawable(
-                ColorDrawable(ContextCompat.getColor(this, R.color.colorPrimaryDark))
-            )
-        }
         Util.requestPermission(this, Manifest.permission.RECORD_AUDIO)
         Util.requestPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
     }
@@ -45,12 +44,22 @@ class MainActivity : AppCompatActivity() {
             val apiConnector = ApiConnector(userId, this)
             if (resultCode == RESULT_OK) {
                 Toast.makeText(this, "Speech recorded successfully!", Toast.LENGTH_SHORT).show()
-                apiConnector.sendAudio(File(AUDIO_FILE_PATH),transcriptionName)
+                displayTranscriptionResults(apiConnector.sendAudio(File(AUDIO_FILE_PATH),transcriptionName)!!)
             } else if (resultCode == RESULT_CANCELED) {
                 Toast.makeText(this, "Speech was not recorded", Toast.LENGTH_SHORT).show()
             }
         }
     }
+
+    private fun displayTranscriptionResults(ratios: List<Ratio>) {
+        val nextFrag =
+            RatioFragment.newInstance(ratios as ArrayList<Ratio>)
+        this.supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, nextFrag, "ratioFragment")
+            .addToBackStack(null)
+            .commit()
+    }
+
 
     fun recordAudio(v: View?) {
         AndroidAudioRecorder.with(this) // Required
@@ -63,5 +72,13 @@ class MainActivity : AppCompatActivity() {
             .setAutoStart(false)
             .setKeepDisplayOn(true) // Start recording
             .record()
+    }
+
+    override fun onListFragmentInteraction(item: Ratio?) {
+
+    }
+
+    override fun onFragmentInteraction(uri: Uri) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

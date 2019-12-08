@@ -1,13 +1,10 @@
 package com.kurocho.speech2textrecorder
 
 
+import com.kurocho.speech2textrecorder.ratioFragment.Ratio
 import okhttp3.MultipartBody
-import okhttp3.ResponseBody
 import retrofit2.Call
-import retrofit2.http.Header
-import retrofit2.http.Multipart
-import retrofit2.http.POST
-import retrofit2.http.Part
+import retrofit2.http.*
 
 
 interface SpeechTextService {
@@ -20,7 +17,6 @@ interface SpeechTextService {
     fun sendAudio(@Header("userId") userId: String?,
                   @Header("transcriptionName") name: String?,
                   @Part audio: MultipartBody.Part
-    ): Call<ResponseBody>
-
+    ): Call<List<Ratio>>
 
 }
