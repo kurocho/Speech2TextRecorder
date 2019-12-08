@@ -5,6 +5,7 @@ import android.widget.Toast
 import com.kurocho.speech2textrecorder.ratioFragment.Ratio
 import okhttp3.MediaType
 import okhttp3.MultipartBody
+import okhttp3.OkHttpClient
 import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -12,15 +13,20 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
-import kotlin.collections.ArrayList
+import java.util.concurrent.TimeUnit
 
 
 class ApiConnector(val userId: String?, val activityContext: Activity) {
 
     fun speechTextService() : SpeechTextService{
+        val okHttpClient = OkHttpClient.Builder()
+            .readTimeout(60, TimeUnit.SECONDS)
+            .connectTimeout(5, TimeUnit.SECONDS)
+            .build()
         val retrofit = Retrofit.Builder()
             .baseUrl(SpeechTextService.getURL())
             .addConverterFactory(GsonConverterFactory.create())
+            .client(okHttpClient)
             .build()
         return retrofit.create<SpeechTextService>(SpeechTextService::class.java)
     }
